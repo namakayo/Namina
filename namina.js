@@ -137,6 +137,8 @@ hpointer.start=hpointer.move;
   b.addEventListener("click",async ()=>{
     const dcanv=document.createElement("canvas");
     const ddrawer=new Drawer(dcanv,3);
+    ddrawer.w=pxs;
+    ddrawer.h=ddrawer.w;
     drawCanvas(true);
     dcanv.toBlob((blob)=>{
       const url=URL.createObjectURL(blob);
@@ -246,6 +248,7 @@ function getMeshBitmask(){
 getMeshBitmask();
 function drawCanvas(px=false){
   Draw.channel(px?3:0);
+  Draw.clear();
   if(!px){
     Draw.set("fillStyle",cssPal.canvasbg);
     Drawv.fillRect(new Vec(0,0),new Vec(canv.width,canv.height));
