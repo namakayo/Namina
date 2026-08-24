@@ -137,8 +137,8 @@ hpointer.start=hpointer.move;
   b.addEventListener("click",async ()=>{
     const dcanv=document.createElement("canvas");
     const ddrawer=new Drawer(dcanv,3);
-    ddrawer.w=pxs;
-    ddrawer.h=ddrawer.w;
+    dcanv.width=pxs;
+    dcanv.height=pxs;
     drawCanvas(true);
     dcanv.toBlob((blob)=>{
       const url=URL.createObjectURL(blob);
