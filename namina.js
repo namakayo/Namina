@@ -44,6 +44,7 @@ const palelPointer=[];
 let palSelected=0;
 let drawing=true;
 let outline=false;
+let outlineColor="#454545";
 
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
@@ -148,7 +149,14 @@ hpointer.start=hpointer.move;
       outline=true;
       drawCanvas();
     }
-  });}
+  });
+  const bpointer=new Pointer(b);
+  bpointer.holdTreshold=400;
+  bpointer.holded=()=>{
+    outlineColor=getColorPicker().toHex();
+    drawCanvas();
+  };
+}
 {const b=document.getElementById("bDownload");
   b.addEventListener("click",async ()=>{
     const dcanv=document.createElement("canvas");
@@ -320,7 +328,7 @@ function drawCanvas(px=false){
     });
   }
   Draw.channel(4);
-  Draw.set("fillStyle","#454545");
+  Draw.set("fillStyle",outlineColor);
   if(outline&&!px){
     gbitmap.iterate((x,y,th)=>{
       const tsize=new Vec(px?8:pxTile,px?8:pxTile);

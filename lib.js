@@ -439,7 +439,10 @@ export class Pointer{
     this.node=node;
     this.useVec=useVec;
     this.start=new Function();
-    this.move=new Function();''
+    this.move=new Function();
+    this.holdTreshold=100;
+    this.holdTimer;
+    this.holded=new Function();
     this.touches=new Map();
     this.limit=true;
     node.addEventListener("pointerdown",(e)=>{
@@ -453,6 +456,15 @@ export class Pointer{
         this.start(ex,ey);
         this.touches.set(e.pointerId,{x:ex,y:ey});
       }
+      this.holdTimer=setTimeout(()=>{
+        if(this.useVec){
+          const now=new Vec(ex,ey);
+          this.holded(now);
+          this.touches.set(e.pointerId,now);
+        }else{
+          this.holded(ex,ey);
+        }
+      },this.holdTreshold);
     });
     node.addEventListener("pointermove",(e)=>{
       const ex=this.limit?Lib.clamp(e.offsetX,0,node.width):e.offsetX;
@@ -475,9 +487,11 @@ export class Pointer{
     });
     node.addEventListener("pointerup",(e)=>{
       this.touches.delete(e.pointerId);
+      clearTimeout(this.holdTimer);
     });
     node.addEventListener("pointercancel",(e)=>{
       this.touches.delete(e.pointerId);
+      clearTimeout(this.holdTimer);
     });
   }
 }
