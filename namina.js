@@ -2,6 +2,7 @@ import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
 
 //HTML references
 const canv=document.getElementById("main");
+const ocanv=document.getElementById("outline");
 const ccanv=document.getElementById("color");
 const colori=document.getElementById("colori");
 const hcanv=document.getElementById("hue");
@@ -11,6 +12,8 @@ const paldiv=document.getElementById("paldiv");
 //Drawers
 const drawer=new Drawer(canv);
 drawer.resizeCanvas();
+const odrawer=new Drawer(ocanv,4);
+odrawer.resizeCanvas();
 const cdrawer=new Drawer(ccanv,1);
 cdrawer.h=160;
 cdrawer.w=cdrawer.h;
@@ -40,6 +43,7 @@ const palel=[];
 const palelPointer=[];
 let palSelected=0;
 let drawing=true;
+let outline=false;
 
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
@@ -133,14 +137,25 @@ hpointer.start=hpointer.move;
       drawCanvas();
     }
   });}
+{const b=document.getElementById("bOutline");
+  b.addEventListener("click",()=>{
+    if(outline){
+      b.style.backgroundColor=cssPal.btn;
+      outline=false;
+      drawCanvas();
+    }else{
+      b.style.backgroundColor=cssPal.btnon;
+      outline=true;
+      drawCanvas();
+    }
+  });}
 {const b=document.getElementById("bDownload");
   b.addEventListener("click",async ()=>{
     const dcanv=document.createElement("canvas");
     const ddrawer=new Drawer(dcanv,3);
-    dcanv.width=pxs;
-    dcanv.height=pxs;
+    dcanv.width=pxs+12;
+    dcanv.height=pxs+12;
     drawCanvas(true);
-    document.body.appendChild(dcanv)
     dcanv.toBlob((blob)=>{
       const url=URL.createObjectURL(blob);
       const link=document.createElement("a");
@@ -158,11 +173,10 @@ colori.addEventListener("input",()=>{
     drawColorPicker(true);
   }
 });
-
-function fillMesh(origin,regions){
-  const thalf=pxTile/2;
+function fillMesh(origin,regions,radius=1){
+  const thalf=pxTile/2*radius;
   if(regions[0]&&regions[1]&&regions[2]&&regions[3]&&regions[4]){
-    Draw.fillRect(origin.x-thalf,origin.y-thalf,pxTile,pxTile);
+    Draw.fillRect(origin.x-thalf,origin.y-thalf,thalf*2,thalf*2);
     return;
   }
   if(regions[0]){
@@ -198,7 +212,7 @@ function fillMesh(origin,regions){
   }
 }
 function pxMesh(origin,regions){
-  const o=origin;
+  const o=Vec.add(origin,new Vec(6,6));
   if(regions[0]&&regions[1]&&regions[2]&&regions[3]&&regions[4]){
     Draw.fillRect(origin.x-4,origin.y-4,8,8);
     return;
@@ -263,11 +277,10 @@ function getMeshBitmask(){
 }
 getMeshBitmask();
 function drawCanvas(px=false){
-  Draw.channel(px?3:0);
-  Draw.clear();
+  const gbitmap=new Map2(tiles,tiles,()=>{return false});
   if(!px){
-    Draw.set("fillStyle",cssPal.canvasbg);
-    Drawv.fillRect(new Vec(0,0),new Vec(canv.width,canv.height));
+    Draw.channel(4);
+    Draw.clear();
     Draw.set("lineWidth",1);
     Draw.set("strokeStyle",cssPal.canvasline);
     for(let i=1;i<tiles;i++){
@@ -281,6 +294,8 @@ function drawCanvas(px=false){
       Draw.stroke();
     }
   }
+  Draw.channel(px?3:0);
+  Draw.clear();
   for(let i=0;i<pal.length;i++){
     const col=pal[i];
     const bitmap=bitmaps[i]
@@ -289,6 +304,9 @@ function drawCanvas(px=false){
       const thalf=Vec.div(tsize,2);
       const pos=new Vec(x,y).mulInPlace(px?8:pxTile).addInPlace(thalf);
       let nearby=[th?1:0];
+      if(th){
+        gbitmap.set(x,y,th);
+      }
       for(const p of Lib.d8){
         const next=bitmap.get(x+p.x,y+p.y);
         nearby.push(next?1:0);
@@ -299,6 +317,21 @@ function drawCanvas(px=false){
       }else{
         fillMesh(pos,meshBitmask[nearby.join(",")]);
       }
+    });
+  }
+  Draw.channel(4);
+  Draw.set("fillStyle","#454545");
+  if(outline&&!px){
+    gbitmap.iterate((x,y,th)=>{
+      const tsize=new Vec(px?8:pxTile,px?8:pxTile);
+      const thalf=Vec.div(tsize,2);
+      const pos=new Vec(x,y).mulInPlace(px?8:pxTile).addInPlace(thalf);
+      let nearby=[th?1:0];
+      for(const p of Lib.d8){
+        const next=gbitmap.get(x+p.x,y+p.y);
+        nearby.push(next?1:0);
+      }
+      fillMesh(pos,meshBitmask[nearby.join(",")],2);
     });
   }
 }
