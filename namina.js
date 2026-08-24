@@ -20,7 +20,7 @@ hdrawer.w=30;
 
 //Internal constants
 const cssPal=Lib.getCSSColors();
-const tilesize=4;
+const tilesize=8;
 const tiles=8;
 const pxs=tilesize*tiles;
 const bitmaps=[];
@@ -140,6 +140,7 @@ hpointer.start=hpointer.move;
     dcanv.width=pxs;
     dcanv.height=pxs;
     drawCanvas(true);
+    document.body.appendChild(dcanv)
     dcanv.toBlob((blob)=>{
       const url=URL.createObjectURL(blob);
       const link=document.createElement("a");
@@ -197,29 +198,44 @@ function fillMesh(origin,regions){
   }
 }
 function pxMesh(origin,regions){
+  const o=origin;
   if(regions[0]&&regions[1]&&regions[2]&&regions[3]&&regions[4]){
-    Draw.fillRect(origin.x-2,origin.y-2,4,4);
+    Draw.fillRect(origin.x-4,origin.y-4,8,8);
     return;
   }
   if(regions[0]){
-    Draw.fillRect(origin.x-1,origin.y-2,2,4);
-    Draw.fillRect(origin.x-2,origin.y-1,4,2);
+    Draw.fillRect(o.x-1,o.y-4,2,8);
+    Draw.fillRect(o.x-2,o.y-3,4,6);
+    Draw.fillRect(o.x-3,o.y-2,6,4);
+    Draw.fillRect(o.x-4,o.y-1,8,2);
   }
   if(regions[1]){
-    Draw.fillRect(origin.x+2,origin.y+2,-2,-1);
-    Draw.fillRect(origin.x+2,origin.y+2,-1,-2);
+    const c=Vec.add(o,new Vec(4,4));
+    for(let i=1;i<=4;i++){
+      const j=4-i+1;
+      Draw.fillRect(c.x,c.y,-j,-i);
+    }
   }
   if(regions[2]){
-    Draw.fillRect(origin.x-2,origin.y+2,2,-1);
-    Draw.fillRect(origin.x-2,origin.y+2,1,-2);
+    const c=Vec.add(o,new Vec(-4,4));
+    for(let i=1;i<=4;i++){
+      const j=4-i+1;
+      Draw.fillRect(c.x,c.y,j,-i);
+    }
   }
   if(regions[3]){
-    Draw.fillRect(origin.x-2,origin.y-2,2,1);
-    Draw.fillRect(origin.x-2,origin.y-2,1,2);
+    const c=Vec.add(o,new Vec(-4,-4));
+    for(let i=1;i<=4;i++){
+      const j=4-i+1;
+      Draw.fillRect(c.x,c.y,j,i);
+    }
   }
   if(regions[4]){
-    Draw.fillRect(origin.x+2,origin.y-2,-2,1);
-    Draw.fillRect(origin.x+2,origin.y-2,-1,2);
+    const c=Vec.add(o,new Vec(4,-4));
+    for(let i=1;i<=4;i++){
+      const j=4-i+1;
+      Draw.fillRect(c.x,c.y,-j,i);
+    }
   }
 }
 function getMeshBitmask(){
@@ -269,9 +285,9 @@ function drawCanvas(px=false){
     const col=pal[i];
     const bitmap=bitmaps[i]
     bitmap.iterate((x,y,th)=>{
-      const tsize=new Vec(px?4:pxTile,px?4:pxTile);
+      const tsize=new Vec(px?8:pxTile,px?8:pxTile);
       const thalf=Vec.div(tsize,2);
-      const pos=new Vec(x,y).mulInPlace(px?4:pxTile).addInPlace(thalf);
+      const pos=new Vec(x,y).mulInPlace(px?8:pxTile).addInPlace(thalf);
       let nearby=[th?1:0];
       for(const p of Lib.d8){
         const next=bitmap.get(x+p.x,y+p.y);
@@ -422,8 +438,3 @@ pickColor(Color.hex(pal[0]));
 drawColorPicker();
 
 drawCanvas();
-
-function foo(){
-  console.log(Lib.mapToObj(bitmap.map));
-}
-window.foo=foo;
