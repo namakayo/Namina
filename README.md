@@ -5,8 +5,7 @@ Page: https://namakayo.github.io/Namina/
 # Namina
 Inspired by <a href="https://github.com/Anuken/Lamina">Anuken/Lamina</a>
 
-Draw marching squares in a 8x8 grid
-Namina outputs a pixelated 64x64 sprite of what you've drawn. The actual .png file is 76x76.
+Draw marching squares in a 8x8 grid. Namina outputs a pixelated 64x64 sprite of what you've drawn. The actual .png file is 76x76 regardless if you have outline enabled or disabled.
 
 # Documentation
 # UI
@@ -19,6 +18,8 @@ Do not download your sprite manually from any of the canvases. Use the download 
 You can only use colors in the palette.
 
 The order of palette color drawn to the canvas is left->right.
+
+It is recommended to have less than 8 colors in the palette. Large palette can cause lag.
 # Buttons
 | Button | Function |
 | --- | --- |
