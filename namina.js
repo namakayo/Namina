@@ -522,8 +522,10 @@ function palSave(){
   localStorage.setItem("palette",JSON.stringify(pal));
 }
 function palLoad(){
-  const toLoad=JSON.parse(localStorage.getItem("palette"));
-  if(toLoad==null)return;
+  let toLoad=JSON.parse(localStorage.getItem("palette"));
+  if(toLoad==null){
+    toLoad=[Color.rgb(0,0,255).toHex(),Color.rgb(255,255,0).toHex(),Color.rgb(255,0,0).toHex(),Color.rgb(255,0,200).toHex()];
+  }
   for(let i=0;i<toLoad.length;i++){
     const c=toLoad[i];
     palAdd(Color.hex(c));
@@ -531,16 +533,6 @@ function palLoad(){
 }
 function init(){
   palLoad();
-  const pall=pal.length;
-  palAdd(Color.rgb(0,0,255));
-  palAdd(Color.rgb(255,255,0));
-  palAdd(Color.rgb(255,0,0));
-  palAdd(Color.rgb(255,0,200));
-  if(pal.length>pall){
-    for(let i=0;i<4;i++){
-      palRemove(pall);
-    }
-  }
   palSelect(0);
   pickColor(Color.hex(pal[0]));
   drawColorPicker();
