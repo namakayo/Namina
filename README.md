@@ -3,7 +3,7 @@ Page: https://namakayo.github.io/Namina/
 
 **If the page is blank/broken, please restart the page. This is a known bug and should only happen the first time you visit the page.**
 
-Let me know if you found issues.
+Let me know if there are any issues.
 
 <p align="center"><img src="preview.jpg" alt="preview" width="250"></p>
 
