@@ -531,13 +531,14 @@ function palLoad(){
 }
 function init(){
   palLoad();
+  const pall=pal.length;
   palAdd(Color.rgb(0,0,255));
   palAdd(Color.rgb(255,255,0));
   palAdd(Color.rgb(255,0,0));
   palAdd(Color.rgb(255,0,200));
-  if(pal.length>4){
+  if(pal.length>pall){
     for(let i=0;i<4;i++){
-      palRemove(4);
+      palRemove(pall);
     }
   }
   palSelect(0);
