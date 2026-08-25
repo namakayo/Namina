@@ -16,8 +16,8 @@ drawer.resizeCanvas();
 const odrawer=new Drawer(ocanv,4);
 odrawer.resizeCanvas();
 const pdrawer=new Drawer(pcanv,3);
-pdrawer.w=76;
-pdrawer.h=76;
+pdrawer.w=74;
+pdrawer.h=74;
 const cdrawer=new Drawer(ccanv,1);
 cdrawer.h=160;
 cdrawer.w=cdrawer.h;
@@ -183,8 +183,8 @@ hpointer.end=()=>{
   b.addEventListener("click",async ()=>{
     const dcanv=document.createElement("canvas");
     const ddrawer=new Drawer(dcanv,3);
-    dcanv.width=pxs+12;
-    dcanv.height=pxs+12;
+    dcanv.width=pxs+10;
+    dcanv.height=pxs+10;
     drawCanvas(true);
     dcanv.toBlob((blob)=>{
       const url=URL.createObjectURL(blob);
@@ -242,7 +242,7 @@ function fillMesh(origin,regions,radius=1){
   }
 }
 function pxMesh(origin,regions,size=4){
-  const o=Vec.add(origin,new Vec(6,6));
+  const o=Vec.add(origin,new Vec(5,5));
   if(regions[0]&&regions[1]&&regions[2]&&regions[3]&&regions[4]){
     Draw.fillRect(o.x-size,o.y-size,size*2,size*2);
     return;
@@ -351,9 +351,9 @@ function drawCanvas(px=false){
         nearby.push(next?1:0);
       }
       if(px){
-        for(let dx=-6;dx<=6;dx++){
-          for(let dy=-6;dy<=6;dy++){
-           if(dx*dx+dy*dy<=6*6){
+        for(let dx=-5;dx<=5;dx++){
+          for(let dy=-5;dy<=5;dy++){
+           if(dx*dx+dy*dy<=5*5){
              pxMesh(Vec.add(pos,new Vec(dx,dy)),meshBitmask[nearby.join(",")],4);
            }
           }
