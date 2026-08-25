@@ -64,6 +64,15 @@ class Menu{
     mpaldiv.appendChild(csquare);
     this.palel.push(csquare);
     this.palelPointer.push(cspointer);
+    const oselected=palSelected;
+    palSelected=this.pal.length-1;
+    while(palSelected>oselected+1){
+      this.swap(palSelected,palSelected-1);
+      palSelected--;
+    }
+    if(oselected<this.pal.length-1){
+      this.select(oselected+1);
+    }
     this.updateColorPickerPointer();
     this.save();
   }
@@ -607,18 +616,21 @@ function palAdd(col){
   csquare.style.backgroundColor=col.toHex();
   csquare.style.borderColor=cssPal.square;
   const cspointer=new Pointer(csquare);
-  cspointer.start=()=>{
-    if(colorPicker.editing){
-      pickColor(Color.hex(pal[thisi]));
-      drawColorPicker();
-    }
-    palSelect(thisi);
-  }
   paldiv.appendChild(csquare);
   updatePaldivWidth();
   palel.push(csquare);
   palelPointer.push(cspointer);
   bitmaps.push(new Map2(tiles,tiles,()=>{return false}));
+  const oselected=palSelected;
+  palSelected=pal.length-1;
+  while(palSelected>oselected+1){
+    palSwap(palSelected,palSelected-1);
+    palSelected--;
+  }
+  if(oselected<pal.length-1){
+    palSelect(oselected+1);
+  }
+  updateColorPickerPointer()
   palSave();
 }
 function updateColorPickerPointer(){
