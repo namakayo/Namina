@@ -523,7 +523,9 @@ function palSave(){
 }
 function palLoad(){
   const toLoad=JSON.parse(localStorage.getItem("palette"));
-  for(const c of toLoad){
+  if(toLoad==null)return;
+  for(let i=0;i<toLoad.length;i++){
+    const c=toLoad[i];
     palAdd(Color.hex(c));
   }
 }
