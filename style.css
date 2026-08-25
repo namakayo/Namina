@@ -8,9 +8,10 @@
   --canvasbg: #0A070A;
   --canvasline: #1E202F;
   --square: #593955;
-  --squarelight: #C4A1BF;
+  --squarelight: #D495CB;
   --btn: #2F2536;
   --btnon: #684B69;
+  --popupbehind: rgba(30, 18, 41, 0.98);
   color-scheme: light only;
 }
 
@@ -53,7 +54,7 @@ canvas{
   height: 40px;
   margin: 3px;
   padding: 0;
-  border: 2px solid;
+  border: 3px solid;
   border-radius: 4px;
   transition: all 0.2s ease;
 }
@@ -65,7 +66,7 @@ canvas{
   border-radius: 6px;
 }
 .pallete{
-  margin: 8px;
+  margin: 0px;
 }
 .buttons{
   width: 160px;
@@ -102,4 +103,25 @@ button:active{
 #preview{
   width: 48px;
   height: 48px;
+}
+.popup{
+  display: none;
+  position: fixed;
+  width: 100vw;
+  background: var(--popupbehind);
+}
+.popup h2{
+  margin: 12px;
+}
+.popup h4{
+  margin: 12px;
+}
+#mpaldiv{
+  height: 300px;
+  width: 100%;
+  background-color: var(--bg2);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: repeat(8,1fr);
+  grid-template-rows: repeat(5,1fr);
 }

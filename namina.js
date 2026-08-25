@@ -9,6 +9,8 @@ const colori=document.getElementById("colori");
 const hcanv=document.getElementById("hue");
 const ctx=canv.getContext("2d");
 const paldiv=document.getElementById("paldiv");
+const menu=document.getElementById("menu");
+const mpaldiv=document.getElementById("mpaldiv")
 
 //Drawers
 const drawer=new Drawer(canv);
@@ -45,11 +47,96 @@ const meshBitmask={};
 const pal=[];
 const palel=[];
 const palelPointer=[];
+class Menu{
+  constructor(){
+    this.pal=[];
+    this.palel=[];
+    this.palelPointer=[];
+    this.selected=0;
+  }
+  add(col){
+    this.pal.push(col.toHex());
+    const csquare=document.createElement("div");
+    csquare.className="csquare";
+    csquare.style.backgroundColor=col.toHex();
+    csquare.style.borderColor=cssPal.square;
+    const cspointer=new Pointer(csquare);
+    mpaldiv.appendChild(csquare);
+    this.palel.push(csquare);
+    this.palelPointer.push(cspointer);
+    this.updateColorPickerPointer();
+    this.save();
+  }
+  remove(i){
+    this.pal.splice(i,1);
+    this.palel[i].remove();
+    this.palel.splice(i,1);
+    this.palelPointer.splice(i,1);
+    if(palSelected>=this.pal.length){
+      palSelected--;;
+    }
+    this.palel[palSelected].style.borderColor=cssPal.squarelight;
+    this.updateColorPickerPointer();
+    this.save();
+  }
+  swap(a,b){
+    const acolor=structuredClone(this.pal[a]);
+    this.pal[a]=structuredClone(this.pal[b]);
+    this.pal[b]=acolor;
+    this.palel[a].style.backgroundColor=this.pal[a];
+    this.palel[b].style.backgroundColor=this.pal[b];
+    this.save();
+  }
+  set(i,col){
+    this.pal[i]=col.toHex();
+    this.palel[i].style.backgroundColor=col.toHex();
+    this.save();
+  }
+  select(i){
+    palSelected=i;
+    palMenu=true;
+    palel.forEach((p)=>{
+      p.style.borderColor=cssPal.square;
+    });
+    this.palel.forEach((p)=>{
+      p.style.borderColor=cssPal.square;
+    });
+    this.palel[i].style.borderColor=cssPal.squarelight;
+  }
+  updateColorPickerPointer(){
+    this.palelPointer.forEach((p,i)=>{
+      p.start=()=>{
+        if(colorPicker.editing){
+          pickColor(Color.hex(this.pal[i]));
+          drawColorPicker();
+        }
+        this.select(i);
+      }
+    });
+  }
+  save(){
+    localStorage.setItem("savedPalette",JSON.stringify(this.pal));
+  }
+  load(){
+    let toLoad=JSON.parse(localStorage.getItem("savedPalette"));
+    if(toLoad==null){
+      toLoad=[Color.rgb(0,0,255).toHex(),Color.rgb(255,255,0).toHex(),Color.rgb(255,0,0).toHex(),Color.rgb(255,0,200).toHex()];
+    }
+    for(let i=0;i<toLoad.length;i++){
+      const c=toLoad[i];
+      this.add(Color.hex(c));
+    }
+  }
+}
+const mpal=new Menu();
 let palSelected=0;
+let palSelectedLast=0;
+let palMenu=false;
 let drawing=true;
 let outline=false;
 let outlineColor="#454545";
 let drawPreview=false;
+let inMenu=false;
 
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
@@ -78,8 +165,12 @@ cpointer.move=(pos,d)=>{
   colorPicker.s=pos.x/cdrawer.w;
   colorPicker.l=1-pos.y/cdrawer.h;
   if(colorPicker.editing){
-    palSet(palSelected,getColorPicker());
-    drawCanvas();
+    if(palMenu){
+      mpal.set(palSelected,getColorPicker());
+    }else{
+      palSet(palSelected,getColorPicker());
+      drawCanvas();
+    }
   }
   drawColorPicker();
 };
@@ -93,8 +184,12 @@ hpointer.move=(pos,d)=>{
   drawPreview=false;
   colorPicker.h=pos.y/cdrawer.h;
   if(colorPicker.editing){
-    palSet(palSelected,getColorPicker());
-    drawCanvas();
+    if(palMenu){
+      mpal.set(palSelected,getColorPicker());
+    }else{
+      palSet(palSelected,getColorPicker());
+      drawCanvas();
+    }
   }
   drawColorPicker();
 };
@@ -107,13 +202,22 @@ hpointer.end=()=>{
 //Buttons
 {const b=document.getElementById("bCopy");
   b.addEventListener("click",()=>{
-    pickColor(Color.hex(pal[palSelected]));
-    drawColorPicker()
+    if(palMenu){
+      pickColor(Color.hex(mpal.pal[palSelected]));
+      drawColorPicker();
+    }else{
+      pickColor(Color.hex(pal[palSelected]));
+      drawColorPicker();
+    }
   });}
 {const b=document.getElementById("bSet");
   b.addEventListener("click",()=>{
-    palSet(palSelected,getColorPicker());
-    drawCanvas();
+    if(palMenu){
+      mpal.set(palSelected,getColorPicker());
+    }else{
+      palSet(palSelected,getColorPicker());
+      drawCanvas();
+    }
   });}
 {const b=document.getElementById("bEdit");
   b.addEventListener("click",()=>{
@@ -121,7 +225,11 @@ hpointer.end=()=>{
       b.style.backgroundColor=cssPal.btn;
       colorPicker.editing=false;
     }else{
-      pickColor(Color.hex(pal[palSelected]));
+      if(palMenu){
+        pickColor(Color.hex(mpal.pal[palSelected]));
+      }else{
+        pickColor(Color.hex(pal[palSelected]));
+      }
       drawColorPicker()
       b.style.backgroundColor=cssPal.btnon;
       colorPicker.editing=true;
@@ -129,35 +237,61 @@ hpointer.end=()=>{
   });}
 {const b=document.getElementById("bLeft");
   b.addEventListener("click",()=>{
-    if(palSelected>0){
-      palSwap(palSelected,palSelected-1);
-      palSelected--;
-      palSelect(palSelected);
-      drawCanvas();
+    if(palMenu){
+      if(palSelected>0){
+        mpal.swap(palSelected,palSelected-1);
+        palSelected--;
+        mpal.select(palSelected);
+      }
+    }else{
+      if(palSelected>0){
+        palSwap(palSelected,palSelected-1);
+        palSelected--;
+        palSelect(palSelected);
+        drawCanvas();
+      }
     }
   });}
 {const b=document.getElementById("bRight");
   b.addEventListener("click",()=>{
-    if(palSelected<pal.length-1){
-      palSwap(palSelected,palSelected+1);
-      palSelected++;
-      palSelect(palSelected);
-      drawCanvas();
+    if(palMenu){
+      if(palSelected<mpal.pal.length-1){
+        mpal.swap(palSelected,palSelected+1);
+        palSelected++;
+        mpal.select(palSelected);
+      }
+    }else{
+      if(palSelected<pal.length-1){
+        palSwap(palSelected,palSelected+1);
+        palSelected++;
+        palSelect(palSelected);
+        drawCanvas();
+      }
     }
   });}
 {const b=document.getElementById("bAdd");
   b.addEventListener("click",()=>{
-    palAdd(getColorPicker());
+    if(palMenu){
+      mpal.add(getColorPicker());
+    }else{
+      palAdd(getColorPicker());
+    }
   });}
 {const b=document.getElementById("bRemove");
   b.addEventListener("click",()=>{
-    if(pal.length>1){
-      palRemove(palSelected);
-      if(colorPicker.editing){
-        pickColor(Color.hex(pal[palSelected]));
-        drawColorPicker();
+    if(palMenu){
+      if(mpal.pal.length>1){
+        mpal.remove(palSelected);
       }
-      drawCanvas();
+    }else{
+      if(pal.length>1){
+        palRemove(palSelected);
+        if(colorPicker.editing){
+          pickColor(Color.hex(pal[palSelected]));
+          drawColorPicker();
+        }
+        drawCanvas();
+      }
     }
   });}
 {const b=document.getElementById("bOutline");
@@ -180,7 +314,7 @@ hpointer.end=()=>{
   };
 }
 {const b=document.getElementById("bDownload");
-  b.addEventListener("click",async ()=>{
+  b.addEventListener("click",()=>{
     const dcanv=document.createElement("canvas");
     const ddrawer=new Drawer(dcanv,3);
     dcanv.width=pxs+10;
@@ -194,6 +328,24 @@ hpointer.end=()=>{
       link.click();
       URL.revokeObjectURL(url);
     },"image/png");
+  });}
+{const b=document.getElementById("bMenu");
+  b.addEventListener("click",()=>{
+    if(inMenu){
+      if(palMenu){
+        palSelected=palSelectedLast;
+        palSelect(palSelected);
+      }
+      menu.style.display="none";
+      b.style.backgroundColor=cssPal.btn;
+      inMenu=false;
+    }else{
+      palSelectedLast=palSelected;
+      menu.style.display="block";
+      b.style.backgroundColor=cssPal.btnon;
+      menu.style.height=`${drawer.h}px`;
+      inMenu=true;
+    }
   });}
   
 //Color input
@@ -500,6 +652,10 @@ function palSet(i,col){
 }
 function palSelect(i){
   palSelected=i;
+  palMenu=false;
+  mpal.palel.forEach((p)=>{
+    p.style.borderColor=cssPal.square;
+  });
   palel.forEach((p)=>{
     p.style.borderColor=cssPal.square;
   });
@@ -537,6 +693,7 @@ function palLoad(){
   }
 }
 function init(){
+  mpal.load();
   palLoad();
   palSelect(0);
   pickColor(Color.hex(pal[0]));
