@@ -3,9 +3,9 @@ Page: https://namakayo.github.io/Namina/
 
 **If the page is blank/broken, please restart the page. This is a known bug and should only happen the first time you visit the page.**
 
-<p align="center"><img src="preview.jpg" alt="preview" width="250"></p>
+This is an early version, i will update and add more features in the future. Thanks for using Namina!
 
-**This is an early version, i will update and add more features in the future. Thanks for using Namina!**
+<p align="center"><img src="preview.jpg" alt="preview" width="250"></p>
 
 # Namina
 Inspired by <a href="https://github.com/Anuken/Lamina">Anuken/Lamina</a>, for mobile users.
