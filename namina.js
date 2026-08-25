@@ -529,16 +529,18 @@ function palLoad(){
     palAdd(Color.hex(c));
   }
 }
-
-palLoad();
-if(pal.length==0){
-  palAdd(Color.rgb(0,0,255));
-  palAdd(Color.rgb(255,255,0));
-  palAdd(Color.rgb(255,0,0));
-  palAdd(Color.rgb(255,0,200));
+function init(){
+  palLoad();
+  if(pal.length==0){
+    palAdd(Color.rgb(0,0,255));
+    palAdd(Color.rgb(255,255,0));
+    palAdd(Color.rgb(255,0,0));
+    palAdd(Color.rgb(255,0,200));
+    palSave();
+  }
+  palSelect(0);
+  pickColor(Color.hex(pal[0]));
+  drawColorPicker();
+  drawCanvas();
 }
-palSelect(0);
-pickColor(Color.hex(pal[0]));
-drawColorPicker();
-
-drawCanvas();
+init();
