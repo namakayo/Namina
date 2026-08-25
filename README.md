@@ -21,18 +21,6 @@ The UI consists of the main canvas, preview canvas, color picker, buttons, layer
 Note that the main canvas does not have the actual outline. The preview canvas has it. Also, ignore the thin line gaps in the main canvas.
 
 You can set outline color to the color picker by long-pressing the outline button.
-### Palette
-The palette can be opened using the palette button. This should be self-explanatory.
-
-While selecting a color in the palette, the buttons will switch to work in the palette instead of layers.
-
-Colors is saved in local storage so you'll still have your palette after exiting.
-### Layers
-The order of layers drawn to the canvas is left->right.
-
-It is recommended to have less than 8 layers. Large amount of layers can cause lag.
-
-Layer colors is saved in local storage just like the palette so you'll still have the same colors after exiting.
 ### Buttons
 | Button | Function |
 | --- | --- |
@@ -45,4 +33,16 @@ Layer colors is saved in local storage just like the palette so you'll still hav
 | remove | Remove current layer |
 | outline | Click: Toggle outline, Hold: Set outline color to the color picker |
 | download | Download your epic art |
-| palette | Open/close your palette |
+| palette | Open/close palette |
+### Palette
+The palette can be opened using the palette button. This should be self-explanatory.
+
+While selecting a color in the palette, the buttons will switch to work in the palette instead of layers.
+
+Colors is saved in local storage so you'll still have your palette after exiting.
+### Layers
+The order of layers drawn to the canvas is left->right.
+
+It is recommended to have less than 8 layers. Large amount of layers can cause lag.
+
+Layer colors is saved in local storage just like the palette so you'll still have the same colors after exiting.
