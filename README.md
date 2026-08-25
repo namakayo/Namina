@@ -20,6 +20,8 @@ You can only use colors in the palette.
 The order of palette color drawn to the canvas is left->right.
 
 It is recommended to have less than 8 colors in the palette. Large palette can cause lag.
+
+The palette is saved in local storage so you'll still have your palette after exiting.
 # Buttons
 | Button | Function |
 | --- | --- |

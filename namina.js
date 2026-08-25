@@ -1,4 +1,5 @@
-import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
+
+drawCanvas();import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
 
 //HTML references
 const canv=document.getElementById("main");
@@ -54,11 +55,11 @@ let drawPreview=false;
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
 pointer.move=(pos,d)=>{
+  drawPreview=false;
   bitmaps[palSelected].set(pos.divInPlace(drawer.w).mulInPlace(tiles).floorInPlace(),drawing);
   drawCanvas();
 };
 pointer.start=(pos)=>{
-  drawPreview=false;
   if(bitmaps[palSelected].get(Vec.floor(Vec.mul(Vec.div(pos,drawer.w),tiles)))){
     drawing=false;
   }else{
@@ -72,6 +73,7 @@ pointer.end=()=>{
 }
 const cpointer=new Pointer(ccanv,true);
 cpointer.move=(pos,d)=>{
+  drawPreview=false;
   colorPicker.s=pos.x/cdrawer.w;
   colorPicker.l=1-pos.y/cdrawer.h;
   if(colorPicker.editing){
@@ -81,6 +83,10 @@ cpointer.move=(pos,d)=>{
   drawColorPicker();
 };
 cpointer.start=cpointer.move;
+cpointer.end=()=>{
+  drawPreview=true;
+  drawCanvas();
+}
 const hpointer=new Pointer(hcanv,true);
 hpointer.move=(pos,d)=>{
   colorPicker.h=pos.y/cdrawer.h;
@@ -451,6 +457,7 @@ function palAdd(col){
   palel.push(csquare);
   palelPointer.push(cspointer);
   bitmaps.push(new Map2(tiles,tiles,()=>{return false}));
+  palSave();
 }
 function updateColorPickerPointer(){
   palelPointer.forEach((p,i)=>{
@@ -478,10 +485,12 @@ function palRemove(i){
   }
   palel[palSelected].style.borderColor=cssPal.squarelight;
   updateColorPickerPointer();
+  palSave();
 }
 function palSet(i,col){
   pal[i]=col.toHex();
   palel[i].style.backgroundColor=col.toHex();
+  palSave();
 }
 function palSelect(i){
   palSelected=i;
@@ -500,6 +509,7 @@ function palSwap(a,b){
   
   palel[a].style.backgroundColor=pal[a];
   palel[b].style.backgroundColor=pal[b];
+  palSave();
 }
 function pickColor(col){
   const hsl=col.hsl();
@@ -507,11 +517,23 @@ function pickColor(col){
   colorPicker.s=hsl.s;
   colorPicker.l=hsl.l/(1-hsl.s*0.5);
 }
+function palSave(){
+  localStorage.setItem("palette",JSON.stringify(pal));
+}
+function palLoad(){
+  const toLoad=JSON.parse(localStorage.getItem("palette"));
+  for(const c of toLoad){
+    palAdd(Color.hex(c));
+  }
+}
 
-palAdd(Color.rgb(0,0,255));
-palAdd(Color.rgb(255,255,0));
-palAdd(Color.rgb(255,0,0));
-palAdd(Color.rgb(255,0,200));
+palLoad();
+if(pal.length==0){
+  palAdd(Color.rgb(0,0,255));
+  palAdd(Color.rgb(255,255,0));
+  palAdd(Color.rgb(255,0,0));
+  palAdd(Color.rgb(255,0,200));
+}
 palSelect(0);
 pickColor(Color.hex(pal[0]));
 drawColorPicker();
