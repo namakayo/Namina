@@ -46,5 +46,3 @@ Layer colors is saved in local storage just like the palette so you'll still hav
 | outline | Click: Toggle outline, Hold: Set outline color to the color picker |
 | download | Download your epic art |
 | palette | Open/close your palette |
-
-Tip: Generally, you want to disable outline when drawing and enable when about to export. Generating outline is quite laggy.
