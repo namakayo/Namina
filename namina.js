@@ -552,6 +552,7 @@ function drawCanvas(px=false){
     });
   }
   if(!px&&drawPreview){
+    clearTimeout(drawPreviewDelay);
     drawPreviewDelay=setTimeout(()=>{
       Draw.channel(3);
       drawCanvas(true);
