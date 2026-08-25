@@ -12,6 +12,8 @@ Inspired by <a href="https://github.com/Anuken/Lamina">Anuken/Lamina</a>, for mo
 
 Draw marching squares in a 8x8 grid. Namina outputs a pixelated 64x64 sprite of what you've drawn. The actual .png file is 74x74 regardless if you have outline enabled or disabled.
 
+You are free to use the sprites made using Namina without credits.
+
 # Documentation
 # UI
 The UI consists of the main canvas, preview canvas, color picker, buttons, and the palette.
