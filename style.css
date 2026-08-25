@@ -1,13 +1,13 @@
 :root{
-  --bg: #140B16;
-  --bg2: #211424;
+  --bg: #160B18;
+  --bg2: #160B18;
   --text: #E2C6E6;
   --light: #EF97D8;
   --mid: #AF74A0;
   --dark: #483646;
   --canvasbg: #0A070A;
   --canvasline: #1E202F;
-  --square: #593955;
+  --square: #160B18;
   --squarelight: #D495CB;
   --btn: #2F2536;
   --btnon: #684B69;
@@ -45,8 +45,11 @@ canvas{
 #colori{
   width: 190px;
   background-color: var(--bg);
-  border: 1px solid var(--dark);
+  border: 0px;
   color: var(--text);
+}
+#colori:focus{
+  outline: none;
 }
 
 .csquare{
@@ -69,29 +72,32 @@ canvas{
   margin: 0px;
 }
 .buttons{
-  width: 160px;
+  width: 150px;
   height: 195px;
-  display: flexbox;
-  align-content: flex-start;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: repeat(4,1fr);
+  margin: 4px;
+  margin-top: 0px;
 }
 button{
   width: 45px;
   height: 45px;
   font-size: 10px;
   background-color: var(--btn);
-  border: 2px solid var(--dark);
+  border: 0px;
   color: var(--light);
   border-radius: 4px;
-  margin: 2px;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  transition: all 0.1s ease-out;
 }
 button:active{
-  border: 2px solid var(--bg);
+  background-color: var(--bg2);
 }
 .flex{
   display: flex;
