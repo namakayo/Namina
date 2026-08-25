@@ -55,7 +55,9 @@ let drawPreview=false;
 const pointer=new Pointer(canv,true);
 pointer.move=(pos,d)=>{
   drawPreview=false;
-  bitmaps[palSelected].set(pos.divInPlace(drawer.w).mulInPlace(tiles).floorInPlace(),drawing);
+  if(pos.y<drawer.w){
+    bitmaps[palSelected].set(pos.divInPlace(drawer.w).mulInPlace(tiles).floorInPlace(),drawing);
+  }
   drawCanvas();
 };
 pointer.start=(pos)=>{

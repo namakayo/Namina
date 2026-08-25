@@ -11,7 +11,7 @@ Draw marching squares in a 8x8 grid. Namina outputs a pixelated 64x64 sprite of 
 # UI
 The UI consists of the main canvas, preview canvas, color picker, buttons, and the palette.
 
-Note that the main canvas does not have the actual outline. The preview canvas has it.
+Note that the main canvas does not have the actual outline. The preview canvas has it. Also, ignore the thin line gaps in the main canvas.
 
 Do not download your sprite manually from any of the canvases. Use the download button.
 # Palette (Layer)
