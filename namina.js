@@ -1,5 +1,4 @@
-
-drawCanvas();import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
+import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
 
 //HTML references
 const canv=document.getElementById("main");
