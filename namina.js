@@ -136,11 +136,13 @@ let drawing=true;
 let outline=false;
 let outlineColor="#454545";
 let drawPreview=false;
+let drawPreviewDelay;
 let inMenu=false;
 
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
 pointer.move=(pos,d)=>{
+  clearTimeout(drawPreviewDelay);
   drawPreview=false;
   if(pos.y<drawer.w){
     bitmaps[palSelected].set(pos.divInPlace(drawer.w).mulInPlace(tiles).floorInPlace(),drawing);
@@ -541,8 +543,10 @@ function drawCanvas(px=false){
     });
   }
   if(!px&&drawPreview){
-    Draw.channel(3);
-    drawCanvas(true);
+    drawPreviewDelay=setTimeout(()=>{
+      Draw.channel(3);
+      drawCanvas(true);
+    },200);
   }
 }
 function getColorPicker(){
