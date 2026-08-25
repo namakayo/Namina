@@ -1,5 +1,8 @@
 Page: https://namakayo.github.io/Namina/
 
+
+**If the page is blank, please restart the page. This is a known bug and should only happen the first time you visit the page.**
+
 <p align="center"><img src="preview.jpg" alt="preview" width="250"></p>
 
 # Namina
