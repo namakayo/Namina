@@ -3,6 +3,7 @@ import {Lib,Drawer,Draw,Drawv,Vec,Color,Map2,Pointer,Raf} from "./lib.js";
 //HTML references
 const canv=document.getElementById("main");
 const ocanv=document.getElementById("outline");
+const pcanv=document.getElementById("preview");
 const ccanv=document.getElementById("color");
 const colori=document.getElementById("colori");
 const hcanv=document.getElementById("hue");
@@ -14,6 +15,9 @@ const drawer=new Drawer(canv);
 drawer.resizeCanvas();
 const odrawer=new Drawer(ocanv,4);
 odrawer.resizeCanvas();
+const pdrawer=new Drawer(pcanv,3);
+pdrawer.w=76;
+pdrawer.h=76;
 const cdrawer=new Drawer(ccanv,1);
 cdrawer.h=160;
 cdrawer.w=cdrawer.h;
@@ -45,6 +49,7 @@ let palSelected=0;
 let drawing=true;
 let outline=false;
 let outlineColor="#454545";
+let drawPreview=false;
 
 //Pointers (touch handler)
 const pointer=new Pointer(canv,true);
@@ -53,12 +58,17 @@ pointer.move=(pos,d)=>{
   drawCanvas();
 };
 pointer.start=(pos)=>{
+  drawPreview=false;
   if(bitmaps[palSelected].get(Vec.floor(Vec.mul(Vec.div(pos,drawer.w),tiles)))){
     drawing=false;
   }else{
     drawing=true;
   }
   pointer.move(pos);
+}
+pointer.end=()=>{
+  drawPreview=true;
+  drawCanvas();
 }
 const cpointer=new Pointer(ccanv,true);
 cpointer.move=(pos,d)=>{
@@ -219,43 +229,43 @@ function fillMesh(origin,regions,radius=1){
     Draw.fill();
   }
 }
-function pxMesh(origin,regions){
+function pxMesh(origin,regions,size=4){
   const o=Vec.add(origin,new Vec(6,6));
   if(regions[0]&&regions[1]&&regions[2]&&regions[3]&&regions[4]){
-    Draw.fillRect(origin.x-4,origin.y-4,8,8);
+    Draw.fillRect(o.x-size,o.y-size,size*2,size*2);
     return;
   }
   if(regions[0]){
-    Draw.fillRect(o.x-1,o.y-4,2,8);
-    Draw.fillRect(o.x-2,o.y-3,4,6);
-    Draw.fillRect(o.x-3,o.y-2,6,4);
-    Draw.fillRect(o.x-4,o.y-1,8,2);
+    for(let i=1;i<=size;i++){
+      const j=size-i+1;
+      Draw.fillRect(o.x-i,o.y-j,i*2,j*2);
+    }
   }
   if(regions[1]){
-    const c=Vec.add(o,new Vec(4,4));
-    for(let i=1;i<=4;i++){
-      const j=4-i+1;
+    const c=Vec.add(o,new Vec(size,size));
+    for(let i=1;i<=size;i++){
+      const j=size-i+1;
       Draw.fillRect(c.x,c.y,-j,-i);
     }
   }
   if(regions[2]){
-    const c=Vec.add(o,new Vec(-4,4));
-    for(let i=1;i<=4;i++){
-      const j=4-i+1;
+    const c=Vec.add(o,new Vec(-size,size));
+    for(let i=1;i<=size;i++){
+      const j=size-i+1;
       Draw.fillRect(c.x,c.y,j,-i);
     }
   }
   if(regions[3]){
-    const c=Vec.add(o,new Vec(-4,-4));
-    for(let i=1;i<=4;i++){
-      const j=4-i+1;
+    const c=Vec.add(o,new Vec(-size,-size));
+    for(let i=1;i<=size;i++){
+      const j=size-i+1;
       Draw.fillRect(c.x,c.y,j,i);
     }
   }
   if(regions[4]){
-    const c=Vec.add(o,new Vec(4,-4));
-    for(let i=1;i<=4;i++){
-      const j=4-i+1;
+    const c=Vec.add(o,new Vec(size,-size));
+    for(let i=1;i<=size;i++){
+      const j=size-i+1;
       Draw.fillRect(c.x,c.y,-j,i);
     }
   }
@@ -275,17 +285,30 @@ function getMeshBitmask(){
       if(c[5]&&c[0]){out[2]=true;out[3]=true;}
       if(c[7]&&c[0]){out[3]=true;out[4]=true;}
       //corners
-      if(c[2]&&c[1]&&c[3]){out[1]=true;}
-      if(c[4]&&c[3]&&c[5]){out[2]=true;}
-      if(c[6]&&c[5]&&c[7]){out[3]=true;}
-      if(c[8]&&c[7]&&c[1]){out[4]=true;}
+      if((c[1]&&c[3])||(c[0]&&c[2])){out[1]=true;}
+      if((c[3]&&c[5])||(c[0]&&c[4])){out[2]=true;}
+      if((c[5]&&c[7])||(c[0]&&c[6])){out[3]=true;}
+      if((c[7]&&c[1])||(c[0]&&c[8])){out[4]=true;}
     });
     meshBitmask[c.join(",")]=out;
   }
 }
 getMeshBitmask();
-function drawCanvas(px=false){
+function getCanvasBitmap(){
   const gbitmap=new Map2(tiles,tiles,()=>{return false});
+  for(let i=0;i<pal.length;i++){
+    const col=pal[i];
+    const bitmap=bitmaps[i]
+    bitmap.iterate((x,y,th)=>{
+      if(th){
+        gbitmap.set(x,y,th);
+      }
+    });
+  }
+  return gbitmap;
+}
+function drawCanvas(px=false){
+  const gbitmap=getCanvasBitmap();
   if(!px){
     Draw.channel(4);
     Draw.clear();
@@ -302,8 +325,34 @@ function drawCanvas(px=false){
       Draw.stroke();
     }
   }
+  Draw.channel(px?3:4);
+  if(px)Draw.clear();
+  Draw.set("fillStyle",outlineColor);
+  if(outline){
+    gbitmap.iterate((x,y,th)=>{
+      const tsize=new Vec(px?8:pxTile,px?8:pxTile);
+      const thalf=Vec.div(tsize,2);
+      const pos=new Vec(x,y).mulInPlace(px?8:pxTile).addInPlace(thalf);
+      let nearby=[th?1:0];
+      for(const p of Lib.d8){
+        const next=gbitmap.get(x+p.x,y+p.y);
+        nearby.push(next?1:0);
+      }
+      if(px){
+        for(let dx=-6;dx<=6;dx++){
+          for(let dy=-6;dy<=6;dy++){
+           if(dx*dx+dy*dy<=6*6){
+             pxMesh(Vec.add(pos,new Vec(dx,dy)),meshBitmask[nearby.join(",")],4);
+           }
+          }
+        }
+      }else{
+        fillMesh(pos,meshBitmask[nearby.join(",")],2);
+      }
+    });
+  }
   Draw.channel(px?3:0);
-  Draw.clear();
+  if(!px)Draw.clear();
   for(let i=0;i<pal.length;i++){
     const col=pal[i];
     const bitmap=bitmaps[i]
@@ -327,20 +376,9 @@ function drawCanvas(px=false){
       }
     });
   }
-  Draw.channel(4);
-  Draw.set("fillStyle",outlineColor);
-  if(outline&&!px){
-    gbitmap.iterate((x,y,th)=>{
-      const tsize=new Vec(px?8:pxTile,px?8:pxTile);
-      const thalf=Vec.div(tsize,2);
-      const pos=new Vec(x,y).mulInPlace(px?8:pxTile).addInPlace(thalf);
-      let nearby=[th?1:0];
-      for(const p of Lib.d8){
-        const next=gbitmap.get(x+p.x,y+p.y);
-        nearby.push(next?1:0);
-      }
-      fillMesh(pos,meshBitmask[nearby.join(",")],2);
-    });
+  if(!px&&drawPreview){
+    Draw.channel(3);
+    drawCanvas(true);
   }
 }
 function getColorPicker(){

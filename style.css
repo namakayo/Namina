@@ -95,3 +95,7 @@ button:active{
   position: absolute;
   z-index: -999;
 }
+#preview{
+  width: 48px;
+  height: 48px;
+}

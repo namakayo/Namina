@@ -440,6 +440,7 @@ export class Pointer{
     this.useVec=useVec;
     this.start=new Function();
     this.move=new Function();
+    this.end=new Function();
     this.holdTreshold=100;
     this.holdTimer;
     this.holded=new Function();
@@ -486,10 +487,12 @@ export class Pointer{
       }
     });
     node.addEventListener("pointerup",(e)=>{
+      this.end();
       this.touches.delete(e.pointerId);
       clearTimeout(this.holdTimer);
     });
     node.addEventListener("pointercancel",(e)=>{
+      this.end();
       this.touches.delete(e.pointerId);
       clearTimeout(this.holdTimer);
     });
