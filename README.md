@@ -38,4 +38,4 @@ The palette is saved in local storage so you'll still have your palette after ex
 | outline | Click: Toggle outline, Hold: Set outline color to the color picker |
 | download | Download your epic art |
 
-Tip: Generally, you want to diaable outline when drawing and enable when about to export. Generating outline is quite laggy.
+Tip: Generally, you want to disable outline when drawing and enable when about to export. Generating outline is quite laggy.
