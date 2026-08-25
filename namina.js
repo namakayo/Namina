@@ -90,6 +90,7 @@ cpointer.end=()=>{
 }
 const hpointer=new Pointer(hcanv,true);
 hpointer.move=(pos,d)=>{
+  drawPreview=false;
   colorPicker.h=pos.y/cdrawer.h;
   if(colorPicker.editing){
     palSet(palSelected,getColorPicker());
@@ -98,6 +99,10 @@ hpointer.move=(pos,d)=>{
   drawColorPicker();
 };
 hpointer.start=hpointer.move;
+hpointer.end=()=>{
+  drawPreview=true;
+  drawCanvas();
+}
 
 //Buttons
 {const b=document.getElementById("bCopy");
