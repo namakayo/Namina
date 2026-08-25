@@ -6,7 +6,7 @@ Page: https://namakayo.github.io/Namina/
 <p align="center"><img src="preview.jpg" alt="preview" width="250"></p>
 
 # Namina
-Inspired by <a href="https://github.com/Anuken/Lamina">Anuken/Lamina</a>
+Inspired by <a href="https://github.com/Anuken/Lamina">Anuken/Lamina</a>, for mobile users.
 
 Draw marching squares in a 8x8 grid. Namina outputs a pixelated 64x64 sprite of what you've drawn. The actual .png file is 76x76 regardless if you have outline enabled or disabled.
 
