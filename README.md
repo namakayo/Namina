@@ -16,7 +16,7 @@ The UI consists of the main canvas, preview canvas, color picker, buttons, and t
 
 Note that the main canvas does not have the actual outline. The preview canvas has it. Also, ignore the thin line gaps in the main canvas.
 
-Do not download your sprite manually from any of the canvases. Use the download button.
+You can set outline color to the color picker by long-pressing the outline button.
 # Palette (Layer)
 You can only use colors in the palette.
 
